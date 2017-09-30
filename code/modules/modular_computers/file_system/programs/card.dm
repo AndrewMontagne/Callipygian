@@ -6,6 +6,7 @@
 	transfer_access = ACCESS_HEADS
 	requires_ntnet = 0
 	size = 8
+	usage_flags = PROGRAM_CONSOLE | PROGRAM_LAPTOP
 	tgui_id = "ntos_card"
 	ui_x = 600
 	ui_y = 700

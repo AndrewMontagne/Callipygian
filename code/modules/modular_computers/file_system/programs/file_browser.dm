@@ -47,6 +47,9 @@
 			. = 1
 			if(!RHDD)
 				return 1
+			if(RHDD.readonly)
+				error = "The removable disk is read only!"
+				return 1
 			var/datum/computer_file/file = RHDD.find_file_by_name(params["name"])
 			if(!file || file.undeletable)
 				return 1
@@ -118,6 +121,9 @@
 		if("PRG_copytousb")
 			. = 1
 			if(!HDD || !RHDD)
+				return 1
+			if(RHDD.readonly)
+				error = "The removable disk is read only!"
 				return 1
 			var/datum/computer_file/F = HDD.find_file_by_name(params["name"])
 			if(!F || !istype(F))
@@ -218,7 +224,7 @@
 						"name" = F.filename,
 						"type" = F.filetype,
 						"size" = F.size,
-						"undeletable" = F.undeletable
+						"undeletable" = RHDD.readonly ? TRUE : F.undeletable
 					)))
 				data["usbfiles"] = usbfiles
 

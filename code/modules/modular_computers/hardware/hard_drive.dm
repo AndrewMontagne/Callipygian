@@ -7,6 +7,7 @@
 	w_class = WEIGHT_CLASS_TINY
 	origin_tech = "programming=1;engineering=1"
 	device_type = MC_HDD
+	var/readonly = FALSE
 	var/max_capacity = 128
 	var/used_capacity = 0
 	var/list/stored_files = list()		// List of stored files on this drive. DO NOT MODIFY DIRECTLY!

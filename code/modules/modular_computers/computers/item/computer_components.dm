@@ -26,7 +26,7 @@
 	H.holder = src
 	H.forceMove(src)
 	H.on_install(src, user)
-
+	update_icon()
 
 // Uninstalls component.
 /obj/item/device/modular_computer/proc/uninstall_component(obj/item/computer_hardware/H, mob/living/user = null)
@@ -40,7 +40,7 @@
 	H.forceMove(get_turf(src))
 	H.holder = null
 	H.on_remove(src, user)
-	if(enabled && !use_power())
+	if(enabled && !use_power() && H. != MC_SDD)
 		shutdown_computer()
 	update_icon()
 

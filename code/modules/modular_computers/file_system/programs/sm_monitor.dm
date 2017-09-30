@@ -6,6 +6,7 @@
 	extended_desc = "This program connects to specially calibrated supermatter sensors to provide information on the status of supermatter-based engines."
 	requires_ntnet = TRUE
 	transfer_access = ACCESS_ENGINE
+	usage_flags = PROGRAM_CONSOLE | PROGRAM_LAPTOP
 	network_destination = "supermatter monitoring system"
 	size = 5
 	tgui_id = "ntos_supermatter_monitor"

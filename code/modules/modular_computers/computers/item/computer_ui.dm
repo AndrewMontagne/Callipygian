@@ -47,20 +47,40 @@
 		var/running = 0
 		if(P in idle_threads)
 			running = 1
-
 		data["programs"] += list(list("name" = P.filename, "desc" = P.filedesc, "running" = running))
+
+	var/obj/item/computer_hardware/hard_drive/removable_drive = all_components[MC_SDD]
+	if(removable_drive && removable_drive.stored_files && removable_drive.stored_files.len)
+		for(var/datum/computer_file/program/P in removable_drive.stored_files)
+			var/running = 0
+			if(P in idle_threads)
+				running = 1
+			data["programs"] += list(list("name" = P.filename, "desc" = P.filedesc, "running" = running))
 
 	data["has_light"] = has_light
 	data["light_on"] = light_on
 	data["comp_light_color"] = comp_light_color
 	return data
 
+/obj/item/device/modular_computer/proc/get_program_by_name(program_name)
+	var/obj/item/computer_hardware/hard_drive/hard_drive = all_components[MC_HDD]
+	var/datum/computer_file/program/P = null
+
+	if(hard_drive)
+		P = hard_drive.find_file_by_name(program_name)
+	if(P && istype(P))
+		return P
+
+	var/obj/item/computer_hardware/hard_drive/removable_drive = all_components[MC_SDD]
+	if(removable_drive)
+		P = removable_drive.find_file_by_name(program_name)
+	if(P && istype(P))
+		return P
 
 // Handles user's GUI input
 /obj/item/device/modular_computer/ui_act(action, params)
 	if(..())
 		return
-	var/obj/item/computer_hardware/hard_drive/hard_drive = all_components[MC_HDD]
 	switch(action)
 		if("PC_exit")
 			kill_program()
@@ -83,11 +103,8 @@
 
 		if("PC_killprogram")
 			var/prog = params["name"]
-			var/datum/computer_file/program/P = null
+			var/datum/computer_file/program/P = get_program_by_name(prog)
 			var/mob/user = usr
-			if(hard_drive)
-				P = hard_drive.find_file_by_name(prog)
-
 			if(!istype(P) || P.program_state == PROGRAM_STATE_KILLED)
 				return
 
@@ -96,11 +113,8 @@
 
 		if("PC_runprogram")
 			var/prog = params["name"]
-			var/datum/computer_file/program/P = null
+			var/datum/computer_file/program/P = get_program_by_name(prog)
 			var/mob/user = usr
-			if(hard_drive)
-				P = hard_drive.find_file_by_name(prog)
-
 			if(!P || !istype(P)) // Program not found or it's not executable program.
 				to_chat(user, "<span class='danger'>\The [src]'s screen shows \"I/O ERROR - Unable to run program\" warning.</span>")
 				return
@@ -138,6 +152,7 @@
 				set_light(comp_light_luminosity, 1, comp_light_color)
 			else
 				set_light(0)
+			update_icon()
 
 		if("PC_light_color")
 			var/mob/user = usr

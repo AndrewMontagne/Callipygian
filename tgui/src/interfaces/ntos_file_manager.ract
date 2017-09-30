@@ -60,7 +60,7 @@
 						<td>
 							<ui-button state='{{undeletable ? "disabled" : null}}' action='PRG_usbdeletefile' params='{"name": "{{name}}"}'>DELETE</ui-button>
 							{{#if data.usbconnected}}
-								<ui-button state='{{undeletable ? "disabled" : null}}' action='PRG_copyfromusb' params='{"name": "{{name}}"}'>IMPORT</ui-button>
+								<ui-button state='null' action='PRG_copyfromusb' params='{"name": "{{name}}"}'>IMPORT</ui-button>
 							{{/if}}
 						</td>
 					</tr>
@@ -69,7 +69,7 @@
 			{{/if}}
 			<ui-button action='PRG_newtextfile'>NEW DATA FILE</ui-button>
 		{{/if}}
-		
+
 	{{/if}}
 
 </ui-display>

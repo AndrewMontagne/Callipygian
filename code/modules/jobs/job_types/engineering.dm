@@ -154,7 +154,6 @@ Atmospheric Technician
 	satchel = /obj/item/storage/backpack/satchel/eng
 	duffelbag = /obj/item/storage/backpack/duffelbag/engineering
 	box = /obj/item/storage/box/engineer
-	backpack_contents = list(/obj/item/device/modular_computer/tablet/preset/advanced=1)
 
 /datum/outfit/job/atmos/rig
 	name = "Atmospheric Technician (Hardsuit)"
