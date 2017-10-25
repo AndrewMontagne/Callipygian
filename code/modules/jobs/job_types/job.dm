@@ -182,10 +182,11 @@
 		H.sec_hud_set_ID()
 
 	if(istype(H.wear_pda, /obj/item/device/pda/))
-		var/obj/item/device/pda/pda = H.wear_pda
-		pda.owner = H.real_name
-		pda.ownjob = J.title
-		pda.update_label()
+		var/obj/item/device/pda/PDA = H.wear_pda
+		if(istype(PDA))
+			PDA.owner = H.real_name
+			PDA.ownjob = J.title
+			PDA.update_label()
 	if(istype(H.wear_pda, /obj/item/device/modular_computer/pda/))
 		var/obj/item/device/modular_computer/pda/pda = H.wear_pda
 		pda.turn_on(H)

@@ -67,6 +67,32 @@
 	key_third_person = "shrugs"
 	message = "shrugs."
 
+/datum/emote/living/carbon/human/snap
+	key = "snap"
+	key_third_person = "snaps"
+	message = "snaps their fingers."
+	emote_type = EMOTE_AUDIBLE
+
+/datum/emote/living/carbon/human/snap/run_emote(mob/user, params)
+	if(..())
+		playsound(user.loc, 'sound/effects/fingersnap.ogg', 50)
+
+/datum/emote/living/carbon/human/squish
+	key = "squish"
+	key_third_person = "squishes"
+	message = "squishes."
+	message_param = "squishes at %t."
+
+/datum/emote/living/carbon/human/squish/run_emote(mob/user, params)
+	if(..())
+		playsound(user.loc, 'sound/effects/slime_squish.ogg', 50)
+
+/datum/emote/living/carbon/human/squish/can_run_emote(mob/user)
+	if(!..())
+		return FALSE
+	if(isslimeperson(user))
+		return TRUE
+
 /datum/emote/living/carbon/human/wag
 	key = "wag"
 	key_third_person = "wags"

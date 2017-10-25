@@ -9,8 +9,9 @@
 	exotic_blood = "slimejelly"
 	damage_overlay_type = ""
 	var/datum/action/innate/regenerate_limbs/regenerate_limbs
-	toxic_food = MEAT | DAIRY
-	liked_food = TOXIC
+	liked_food = MEAT
+	examine_text = "a Jelly Person"
+	species_text_color = "#2483ff"
 
 /datum/species/jelly/on_species_loss(mob/living/carbon/C)
 	if(regenerate_limbs)
@@ -111,6 +112,8 @@
 	heatmod = 0.8
 	brutemod = 1.5//1.5 times as much brute, since they have no bones
 	ass_pic = "slime"
+	examine_text = "a Slime Person"
+	species_text_color = "#2483ff"
 
 /datum/species/jelly/slime/on_species_loss(mob/living/carbon/C)
 	C.faction -= "slime"
