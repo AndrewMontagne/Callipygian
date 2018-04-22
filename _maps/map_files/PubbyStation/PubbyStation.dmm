@@ -806,7 +806,6 @@
 /area/shuttle/syndicate)
 "abQ" = (
 /obj/structure/table/optable,
-
 /turf/open/floor/plasteel/vault{
 	dir = 8
 	},
@@ -31725,7 +31724,6 @@
 /area/science/robotics/lab)
 "brC" = (
 /obj/item/clothing/gloves/color/latex,
-
 /obj/structure/window/reinforced{
 	dir = 1;
 	pixel_y = 1
@@ -36020,6 +36018,7 @@
 	},
 /area/medical/sleeper)
 "bzR" = (
+/obj/machinery/body_scanner,
 /turf/open/floor/plasteel/whiteblue/side{
 	dir = 1
 	},
@@ -41542,7 +41541,6 @@
 /area/medical/surgery)
 "bLQ" = (
 /obj/structure/table,
-
 /turf/open/floor/plasteel/whiteblue/side{
 	dir = 4
 	},
@@ -72372,13 +72370,13 @@ aaa
 aaa
 aaa
 aFS
-cBO
-cBP
+cBN
+cBN
 aKs
 aFS
 aFS
-cBT
-cBU
+cBN
+cBN
 aFS
 aKs
 aFS
@@ -72632,7 +72630,7 @@ aFS
 aIs
 aJx
 aJx
-cBR
+cBN
 aMI
 aNZ
 aNZ
@@ -73146,7 +73144,7 @@ aFS
 aIu
 aJy
 aKt
-cBS
+cBN
 aIx
 aOa
 aOa
@@ -73916,14 +73914,14 @@ aGQ
 aHw
 aIw
 aIw
-cBQ
+cBN
 aIx
 aIx
 aOc
 aPj
 aOc
 aIx
-cBV
+cBN
 aMI
 aMI
 aMI
