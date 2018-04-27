@@ -29908,6 +29908,7 @@
 	dir = 8;
 	pixel_x = 23
 	},
+/obj/item/device/roboanalyzer,
 /turf/open/floor/plasteel/black,
 /area/science/robotics/lab)
 "bnT" = (
