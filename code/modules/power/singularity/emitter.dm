@@ -168,8 +168,7 @@
 		update_icon()
 		return
 	if(src.active == 1)
-		if(!active_power_usage || avail(active_power_usage))
-			add_load(active_power_usage)
+		if(draw_joules(active_power_usage))
 			if(!powered)
 				powered = 1
 				update_icon()
@@ -197,8 +196,7 @@
 		return FALSE
 	if(state != 2)
 		return FALSE
-	if(avail(active_power_usage))
-		add_load(active_power_usage)
+	if(draw_joules(active_power_usage))
 		fire_beam()
 
 /obj/machinery/power/emitter/proc/fire_beam(mob/user)

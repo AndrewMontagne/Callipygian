@@ -123,6 +123,8 @@ Class Procs:
 	var/interact_offline = 0 // Can the machine be interacted with while de-powered.
 	var/speed_process = FALSE // Process as fast as possible?
 	var/obj/item/circuitboard/circuit // Circuit to be created and inserted when the machinery is created
+	var/last_processed = 0
+	var/deltaT = 0
 
 /obj/machinery/Initialize()
 	if(!armor)

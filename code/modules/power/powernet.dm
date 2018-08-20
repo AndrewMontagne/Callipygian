@@ -6,16 +6,17 @@
 	var/number					// unique id
 	var/list/cables = list()	// all cables & junctions
 	var/list/nodes = list()		// all connected machines
+	var/list/providers = list() // all connected machines supplying power
 
-	var/load = 0				// the current load on the powernet, increased by each machine at processing
-	var/newavail = 0			// what available power was gathered last tick, then becomes...
-	var/avail = 0				//...the current available power in the powernet
+	var/load = 0				  // the current load on the powernet, increased by each machine at processing
+	var/avail = 0				  //...the current available power in the powernet
 	var/viewavail = 0			// the available power as it appears on the power console (gradually updated)
 	var/viewload = 0			// the load as it appears on the power console (gradually updated)
-	var/netexcess = 0			// excess power on the powernet (typically avail-load)///////
+	var/lastupdated = 0   // Last time we were updated, in ticks
 
 /datum/powernet/New()
 	SSmachines.powernets += src
+	lastupdated = world.time
 
 /datum/powernet/Destroy()
 	//Go away references, you suck!
@@ -40,6 +41,8 @@
 	C.powernet = null
 	if(is_empty())//the powernet is now empty...
 		qdel(src)///... delete it
+	else
+		reload_providers()
 
 //add a cable to the current powernet
 //Warning : this proc DON'T check if the cable exists
@@ -60,6 +63,8 @@
 	M.powernet = null
 	if(is_empty())//the powernet is now empty...
 		qdel(src)///... delete it
+	else
+		reload_providers()
 
 
 //add a power machine to the current powernet
@@ -73,24 +78,57 @@
 	M.powernet = src
 	nodes[M] = M
 
+/datum/powernet/proc/reload_providers()
+	avail = 0
+	providers.Cut()
+	for(var/obj/machinery/power/M in nodes)
+		if(M.joule_buffer > 0)
+			avail += M.joule_buffer
+			providers |= M
+
 //handles the power changes in the powernet
 //called every ticks by the powernet controller
 /datum/powernet/proc/reset()
-	//see if there's a surplus of power remaining in the powernet and stores unused power in the SMES
-	netexcess = avail - load
+	var/deltaT = (world.time - lastupdated) / 10 //Time change in seconds
+	lastupdated = world.time
 
-	if(netexcess > 100 && nodes && nodes.len)		// if there was excess power last cycle
-		for(var/obj/machinery/power/smes/S in nodes)	// find the SMESes in the network
-			S.restore()				// and restore some of the power that was used
-
-	// update power consoles
-	viewavail = round(0.8 * viewavail + 0.2 * avail)
-	viewload = round(0.8 * viewload + 0.2 * load)
+	// update power consoles. joules / seconds = watts
+	viewavail = round((avail + load) / deltaT)
+	viewload = round(load / deltaT)
 
 	// reset the powernet
 	load = 0
-	avail = newavail
-	newavail = 0
+
+/datum/powernet/proc/provide_joules(var/obj/machinery/power/P, var/joules)
+	providers |= P //Add it to providers if it isn't there already
+	avail += joules
+
+// Handles the consumption of power from the power net
+// Returns the number of joules consumed
+/datum/powernet/proc/draw_joules(var/joules, var/draw_partial = FALSE)
+	if(providers.len == 0)
+		return 0
+	if(!draw_partial && (joules > avail)) //Don't bother trying if there isn't enough juice
+		return 0 // No power has been consumed
+
+	var/joules_consumed = 0
+
+	//Picks a power provider at random until satisfied. For loop stops any infinite loops.
+	for(var/i = providers.len; i > 0; i--)
+		var/obj/machinery/power/P = pick(providers)
+		var/required_power = joules - joules_consumed
+
+		if(required_power > P.joule_buffer)
+			joules_consumed += P.joule_buffer
+			P.joule_buffer = 0
+			providers -= P
+		else
+			P.joule_buffer -= required_power
+			joules_consumed += required_power
+
+	avail -= joules_consumed
+	load += joules_consumed
+	return joules_consumed
 
 /datum/powernet/proc/get_electrocute_damage()
 	if(avail >= 1000)

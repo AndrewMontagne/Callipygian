@@ -33,7 +33,7 @@
 
 /obj/machinery/power/port_gen/process()
 	if(active && HasFuel() && !crit_fail && anchored && powernet)
-		add_avail(power_gen * power_output)
+		provide_watts(power_gen * power_output)
 		UseFuel()
 		src.updateDialog()
 

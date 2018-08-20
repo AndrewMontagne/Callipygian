@@ -108,7 +108,7 @@
 /obj/machinery/power/generator/process()
 	//Setting this number higher just makes the change in power output slower, it doesnt actualy reduce power output cause **math**
 	var/power_output = round(lastgen / 10)
-	add_avail(power_output)
+	provide_joules(power_output)
 	lastgenlev = power_output
 	lastgen -= power_output
 	..()

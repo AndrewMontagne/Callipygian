@@ -141,7 +141,7 @@ GLOBAL_LIST_EMPTY(rad_collectors)
 	if(loaded_tank && active)
 		var/power_produced = loaded_tank.air_contents.gases["plasma"] ? loaded_tank.air_contents.gases["plasma"][MOLES] : 0
 		power_produced *= pulse_strength*10
-		add_avail(power_produced)
+		provide_joules(power_produced)
 		last_power = power_produced
 		return
 	return

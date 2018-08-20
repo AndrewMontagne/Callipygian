@@ -51,9 +51,7 @@
 	light_power = 1.75
 
 /obj/machinery/power/floodlight/process()
-	if(avail(active_power_usage))
-		add_load(active_power_usage)
-	else
+	if(draw_joules(active_power_usage) == 0)
 		change_setting(1)
 
 /obj/machinery/power/floodlight/proc/change_setting(val, mob/user)

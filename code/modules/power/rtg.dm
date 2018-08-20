@@ -26,7 +26,7 @@
 
 /obj/machinery/power/rtg/process()
 	..()
-	add_avail(power_gen)
+	provide_watts(power_gen)
 	if(panel_open && irradiate)
 		radiation_pulse(get_turf(src), 2, 3, 6) // Weak but noticeable.
 

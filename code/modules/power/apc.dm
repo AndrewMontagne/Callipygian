@@ -989,15 +989,10 @@
 	transfer_in_progress = FALSE
 	return
 
-/obj/machinery/power/apc/surplus()
+/obj/machinery/power/apc/draw_joules(amount, draw_partial = FALSE)
 	if(terminal)
-		return terminal.surplus()
-	else
-		return 0
-
-/obj/machinery/power/apc/add_load(amount)
-	if(terminal && terminal.powernet)
-		terminal.powernet.load += amount
+		return terminal.draw_joules(amount, draw_partial)
+	return 0
 
 /obj/machinery/power/apc/avail()
 	if(terminal)
@@ -1019,15 +1014,6 @@
 		force_update = 1
 		return
 
-	/*
-	if (equipment > 1) // off=0, off auto=1, on=2, on auto=3
-		use_power(src.equip_consumption, EQUIP)
-	if (lighting > 1) // off=0, off auto=1, on=2, on auto=3
-		use_power(src.light_consumption, LIGHT)
-	if (environ > 1) // off=0, off auto=1, on=2, on auto=3
-		use_power(src.environ_consumption, ENVIRON)
-
-	area.calc_lighting() */
 	lastused_light = area.usage(STATIC_LIGHT)
 	lastused_light += area.usage(LIGHT)
 	lastused_equip = area.usage(EQUIP)
@@ -1044,7 +1030,7 @@
 	var/last_en = environ
 	var/last_ch = charging
 
-	var/excess = surplus()
+	var/excess = avail()
 
 	if(!src.avail())
 		main_status = 0
@@ -1061,13 +1047,13 @@
 		if(excess > lastused_total)		// if power excess recharge the cell
 										// by the same amount just used
 			cell.give(cellused)
-			add_load(cellused/GLOB.CELLRATE)		// add the load used to recharge the cell
+			draw_joules(cellused/GLOB.CELLRATE, TRUE)		// add the load used to recharge the cell
 
 
 		else		// no excess, and not enough per-apc
 			if((cell.charge/GLOB.CELLRATE + excess) >= lastused_total)		// can we draw enough from cell+grid to cover last usage?
 				cell.charge = min(cell.maxcharge, cell.charge + GLOB.CELLRATE * excess)	//recharge with what we can
-				add_load(excess)		// so draw what we can from the grid
+				draw_joules(excess)		// so draw what we can from the grid
 				charging = 0
 
 			else	// not enough power available to run the last tick!
@@ -1115,7 +1101,7 @@
 			if(excess > 0)		// check to make sure we have enough to charge
 				// Max charge is capped to % per second constant
 				var/ch = min(excess*GLOB.CELLRATE, cell.maxcharge*GLOB.CHARGELEVEL)
-				add_load(ch/GLOB.CELLRATE) // Removes the power we're taking from the grid
+				draw_joules(ch/GLOB.CELLRATE) // Removes the power we're taking from the grid
 				cell.give(ch) // actually recharge the cell
 
 			else

@@ -135,7 +135,7 @@
 			if(obscured) //get no light from the sun, so don't generate power
 				return
 			var/sgen = SOLARGENRATE * sunfrac
-			add_avail(sgen)
+			provide_watts(sgen)
 			control.gen += sgen
 		else //if we're no longer on the same powernet, remove from control computer
 			unset_control()

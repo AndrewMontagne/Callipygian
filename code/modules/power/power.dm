@@ -15,6 +15,10 @@
 	use_power = NO_POWER_USE
 	idle_power_usage = 0
 	active_power_usage = 0
+	var/joule_buffer = 0	// Number of joules we are providing to the power net
+
+/obj/machinery/power/Initialize()
+	. = ..()
 
 /obj/machinery/power/Destroy()
 	disconnect_from_network()
@@ -25,19 +29,36 @@
 //////////////////////////////
 
 // common helper procs for all power machines
-/obj/machinery/power/proc/add_avail(amount)
-	if(powernet)
-		powernet.newavail += amount
+/obj/machinery/power/proc/provide_joules(joules)
+	if(powernet && joule_buffer < joules)
+		var/joules_sent = joules - joule_buffer
+		joule_buffer += joules_sent
+		powernet.provide_joules(src, joules_sent)
+		say("Provided [joules_sent] joules!")
+		return joules_sent
+	return 0
 
-/obj/machinery/power/proc/add_load(amount)
+/obj/machinery/power/proc/draw_joules(amount, draw_partial = FALSE)
 	if(powernet)
-		powernet.load += amount
-
-/obj/machinery/power/proc/surplus()
-	if(powernet)
-		return powernet.avail - powernet.load
+		var/joules_drawn = powernet.draw_joules(amount, draw_partial)
+		say("Drew [joules_drawn] joules!")
+		return joules_drawn
 	else
 		return 0
+
+/obj/machinery/power/proc/provide_watts(watts, cap = INFINITY)
+	var/joules = watts * deltaT
+	joules = min(joules, cap)
+	if(cap < 0)
+		return 0
+	return provide_joules(joules)
+
+/obj/machinery/power/proc/draw_watts(watts, draw_partial = FALSE, cap = INFINITY)
+	var/joules = watts * deltaT
+	joules = min(joules, cap)
+	if(cap < 0)
+		return 0
+	return draw_joules(joules, draw_partial)
 
 /obj/machinery/power/proc/avail()
 	if(powernet)

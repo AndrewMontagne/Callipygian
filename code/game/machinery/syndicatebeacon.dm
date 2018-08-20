@@ -19,7 +19,7 @@
 
 
 /obj/machinery/power/singularity_beacon/proc/Activate(mob/user = null)
-	if(surplus() < 1500)
+	if(avail() < 1500)
 		if(user)
 			to_chat(user, "<span class='notice'>The connected wire doesn't have enough current.</span>")
 		return
@@ -85,8 +85,7 @@
 	if(!active)
 		return
 
-	if(surplus() > 1500)
-		add_load(1500)
+	if(draw_joules(1500))
 		if(cooldown <= world.time)
 			cooldown = world.time + 100
 			for(var/obj/singularity/singulo in GLOB.singularities)

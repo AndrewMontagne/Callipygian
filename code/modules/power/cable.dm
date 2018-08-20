@@ -199,14 +199,6 @@ By design, d1 is the smallest direction and d2 is the highest
 // Power related
 ///////////////////////////////////////////
 
-/obj/structure/cable/proc/add_avail(amount)
-	if(powernet)
-		powernet.newavail += amount
-
-/obj/structure/cable/proc/add_load(amount)
-	if(powernet)
-		powernet.load += amount
-
 /obj/structure/cable/proc/surplus()
 	if(powernet)
 		return powernet.avail-powernet.load

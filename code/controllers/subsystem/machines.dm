@@ -39,6 +39,12 @@ SUBSYSTEM_DEF(machines)
 	while(currentrun.len)
 		var/obj/machinery/thing = currentrun[currentrun.len]
 		currentrun.len--
+
+		if(thing.last_processed == 0)
+			thing.deltaT = 1
+		else
+			thing.deltaT = (world.time - thing.last_processed) / 10
+
 		if(!QDELETED(thing) && thing.process(seconds) != PROCESS_KILL)
 			if(thing.use_power)
 				thing.auto_use_power() //add back the power state
@@ -46,6 +52,9 @@ SUBSYSTEM_DEF(machines)
 			processing -= thing
 			if (!QDELETED(thing))
 				thing.isprocessing = FALSE
+
+		thing.last_processed = world.time
+
 		if (MC_TICK_CHECK)
 			return
 

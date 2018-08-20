@@ -71,9 +71,9 @@
 	for(var/obj/item/stock_parts/cell/PC in component_parts)
 		MC += PC.maxcharge
 		C += PC.charge
-	capacity = MC / (15000) * 1e6
+	capacity = MC / GLOB.CELLRATE
 	if(!initial(charge) && !charge)
-		charge = C / 15000 * 1e6
+		charge = C / GLOB.CELLRATE
 
 /obj/machinery/power/smes/attackby(obj/item/I, mob/user, params)
 	//opening using screwdriver
@@ -239,85 +239,42 @@
 	var/last_onln = outputting
 
 	//inputting
-	if(terminal && input_attempt)
-		input_available = terminal.surplus()
-
-		if(inputting)
-			if(input_available > 0)		// if there's power available, try to charge
-
-				var/load = min(min((capacity-charge)/SMESRATE, input_level), input_available)		// charge at set rate, limited to spare capacity
-
-				charge += load * SMESRATE	// increase the charge
-
-				add_load(load)		// add the load to the terminal side network
-
-			else					// if not enough capcity
-				inputting = 0		// stop inputting
-
-		else
-			if(input_attempt && input_available > 0)
-				inputting = 1
+	if(input_attempt && terminal && terminal.powernet)
+		var/joules = draw_watts(input_level, TRUE, capacity - charge)
+		if(joules)
+			inputting = TRUE
+		charge += joules
 	else
-		inputting = 0
+		inputting = FALSE
+
+	if(terminal && terminal.powernet)
+		input_available = terminal.powernet.viewavail
+	else
+		input_available = 0
 
 	//outputting
-	if(output_attempt)
-		if(outputting)
-			output_used = min( charge/SMESRATE, output_level)		//limit output to that stored
+	if(output_attempt && powernet)
+		output_used = provide_watts(output_level, charge)
+		output_used /= deltaT
+		charge -= output_used
 
-			charge -= output_used*SMESRATE		// reduce the storage (may be recovered in /restore() if excessive)
-
-			add_avail(output_used)				// add output to powernet (smes side)
-
-			if(output_used < 0.0001)		// either from no charge or set to 0
-				outputting = 0
-				investigate_log("lost power and turned <font color='red'>off</font>", INVESTIGATE_SINGULO)
-		else if(output_attempt && charge > output_level && output_level > 0)
-			outputting = 1
+		if(output_used < 0.0001)		// either from no charge or set to 0
+			outputting = 0
+			investigate_log("lost power and turned <font color='red'>off</font>", INVESTIGATE_SINGULO)
 		else
-			output_used = 0
+			outputting = 1
 	else
+		output_used = 0
 		outputting = 0
 
 	// only update icon if state changed
 	if(last_disp != chargedisplay() || last_chrg != inputting || last_onln != outputting)
 		update_icon()
 
-
-
-// called after all power processes are finished
-// restores charge level to smes if there was excess this ptick
-/obj/machinery/power/smes/proc/restore()
-	if(stat & BROKEN)
-		return
-
-	if(!outputting)
-		output_used = 0
-		return
-
-	var/excess = powernet.netexcess		// this was how much wasn't used on the network last ptick, minus any removed by other SMESes
-
-	excess = min(output_used, excess)				// clamp it to how much was actually output by this SMES last ptick
-
-	excess = min((capacity-charge)/SMESRATE, excess)	// for safety, also limit recharge by space capacity of SMES (shouldn't happen)
-
-	// now recharge this amount
-
-	var/clev = chargedisplay()
-
-	charge += excess * SMESRATE			// restore unused power
-	powernet.netexcess -= excess		// remove the excess from the powernet, so later SMESes don't try to use it
-
-	output_used -= excess
-
-	if(clev != chargedisplay() ) //if needed updates the icons overlay
-		update_icon()
-	return
-
-
-/obj/machinery/power/smes/add_load(amount)
-	if(terminal && terminal.powernet)
-		terminal.powernet.load += amount
+/obj/machinery/power/smes/draw_watts(amount, draw_partial = FALSE, cap = -1)
+	if(terminal)
+		return terminal.draw_watts(amount, draw_partial, cap)
+	return 0
 
 /obj/machinery/power/smes/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, \
 										datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
